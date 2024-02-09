@@ -1,0 +1,268 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+-- -----------------------------------------------------
+-- Schema resto
+-- -----------------------------------------------------
+USE `mydb` ;
+
+-- -----------------------------------------------------
+-- Table `mydb`.`User`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`User` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`User` (
+  `idUser` INT NOT NULL,
+  `firstName` VARCHAR(45) NOT NULL,
+  `lastName` VARCHAR(45) NOT NULL,
+  `phone` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(200) NOT NULL,
+  `client` TINYINT NOT NULL,
+  `admin` TINYINT NOT NULL,
+  `chef` TINYINT NOT NULL,
+  `lastLogin` DATETIME NULL,
+  PRIMARY KEY (`idUser`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Menu`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Menu` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Menu` (
+  `idMenu` INT NOT NULL,
+  `User_idUser` INT NOT NULL,
+  `title` VARCHAR(45) NOT NULL,
+  `info` VARCHAR(45) NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `createdAt` DATETIME NOT NULL,
+  `updatedAt` DATETIME NULL,
+  PRIMARY KEY (`idMenu`),
+  INDEX `fk_Menu_User_idx` (`User_idUser` ASC) VISIBLE,
+  CONSTRAINT `fk_Menu_User`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `mydb`.`User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Dish`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Dish` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Dish` (
+  `idDish` INT NOT NULL,
+  `title` VARCHAR(45) NOT NULL,
+  `imageUrl` VARCHAR(45) NOT NULL,
+  `timing` DATETIME NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `category` VARCHAR(45) NOT NULL,
+  `country` VARCHAR(45) NOT NULL,
+  `discription` VARCHAR(45) NOT NULL,
+  `price` FLOAT NOT NULL,
+  `halal` TINYINT NOT NULL,
+  `rating` FLOAT NOT NULL,
+  `createdAt` DATETIME NOT NULL,
+  `updatedAt` DATETIME NULL,
+  `Menu_idMenu` INT NOT NULL,
+  `User_idUser` INT NOT NULL,
+  PRIMARY KEY (`idDish`),
+  INDEX `fk_Dish_Menu1_idx` (`Menu_idMenu` ASC) VISIBLE,
+  INDEX `fk_Dish_User1_idx` (`User_idUser` ASC) VISIBLE,
+  CONSTRAINT `fk_Dish_Menu1`
+    FOREIGN KEY (`Menu_idMenu`)
+    REFERENCES `mydb`.`Menu` (`idMenu`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Dish_User1`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `mydb`.`User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Chef`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Chef` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Chef` (
+  `idChef` INT NOT NULL,
+  `checkIn` DATETIME NOT NULL,
+  `checkOut` DATETIME NOT NULL,
+  `inWork` TINYINT NOT NULL,
+  `profile` TEXT NOT NULL,
+  `ceatedAt` DATETIME NOT NULL,
+  `updatedAt` DATETIME NULL,
+  `User_idUser` INT NOT NULL,
+  `Dish_idDish` INT NOT NULL,
+  PRIMARY KEY (`idChef`),
+  INDEX `fk_Chef_User1_idx` (`User_idUser` ASC) VISIBLE,
+  INDEX `fk_Chef_Dish1_idx` (`Dish_idDish` ASC) VISIBLE,
+  CONSTRAINT `fk_Chef_User1`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `mydb`.`User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Chef_Dish1`
+    FOREIGN KEY (`Dish_idDish`)
+    REFERENCES `mydb`.`Dish` (`idDish`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Ingredient`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Ingredient` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Ingredient` (
+  `idIngredient` INT NOT NULL,
+  `title` VARCHAR(45) NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `imageUrl` VARCHAR(45) NOT NULL,
+  `quantity` INT NOT NULL,
+  `createdAt` VARCHAR(45) NOT NULL,
+  `updatedAt` VARCHAR(45) NULL,
+  `User_idUser` INT NOT NULL,
+  PRIMARY KEY (`idIngredient`),
+  INDEX `fk_Ingredient_User1_idx` (`User_idUser` ASC) VISIBLE,
+  CONSTRAINT `fk_Ingredient_User1`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `mydb`.`User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Ordered_dish`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Ordered_dish` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Ordered_dish` (
+  `idOrdered_dish` INT NOT NULL,
+  `Dish_idDish` INT NOT NULL,
+  `Drink_idDrink` INT NULL,
+  `quantity` INT NOT NULL,
+  `price` FLOAT NOT NULL,
+  `discount` INT NOT NULL,
+  PRIMARY KEY (`idOrdered_dish`),
+  INDEX `fk_Ordered_dish_Dish1_idx` (`Dish_idDish` ASC) VISIBLE,
+  CONSTRAINT `fk_Ordered_dish_Dish1`
+    FOREIGN KEY (`Dish_idDish`)
+    REFERENCES `mydb`.`Dish` (`idDish`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Order`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Order` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Order` (
+  `idOrder` INT NULL,
+  `total` FLOAT NOT NULL,
+  `discount` INT NOT NULL,
+  `totalDiscounted` FLOAT NOT NULL,
+  `firstName` VARCHAR(45) NULL,
+  `lastName` VARCHAR(45) NULL,
+  `phone` VARCHAR(45) NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(45) NULL,
+  `User_idUser` INT NOT NULL,
+  `Ordered_dish_idOrdered_dish` INT NOT NULL,
+  PRIMARY KEY (`idOrder`),
+  INDEX `fk_Order_User1_idx` (`User_idUser` ASC) VISIBLE,
+  INDEX `fk_Order_Ordered_dish1_idx` (`Ordered_dish_idOrdered_dish` ASC) VISIBLE,
+  CONSTRAINT `fk_Order_User1`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `mydb`.`User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Order_Ordered_dish1`
+    FOREIGN KEY (`Ordered_dish_idOrdered_dish`)
+    REFERENCES `mydb`.`Ordered_dish` (`idOrdered_dish`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Recipe`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Recipe` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Recipe` (
+  `idRecipe` INT NOT NULL,
+  `instructions` TEXT NOT NULL,
+  `createdAt` VARCHAR(45) NOT NULL,
+  `updatedAt` VARCHAR(45) NULL,
+  `Dish_idDish` INT NOT NULL,
+  `Ingredient_idIngredient` INT NOT NULL,
+  `User_idUser` INT NOT NULL,
+  PRIMARY KEY (`idRecipe`),
+  INDEX `fk_Recipe_Dish1_idx` (`Dish_idDish` ASC) VISIBLE,
+  INDEX `fk_Recipe_Ingredient1_idx` (`Ingredient_idIngredient` ASC) VISIBLE,
+  INDEX `fk_Recipe_User1_idx` (`User_idUser` ASC) VISIBLE,
+  CONSTRAINT `fk_Recipe_Dish1`
+    FOREIGN KEY (`Dish_idDish`)
+    REFERENCES `mydb`.`Dish` (`idDish`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Recipe_Ingredient1`
+    FOREIGN KEY (`Ingredient_idIngredient`)
+    REFERENCES `mydb`.`Ingredient` (`idIngredient`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Recipe_User1`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `mydb`.`User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Payment`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Payment` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Payment` (
+  `idPayment` INT NOT NULL,
+  `payment_method` VARCHAR(45) NOT NULL,
+  `amount` FLOAT NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  `Order_idOrder` INT NOT NULL,
+  PRIMARY KEY (`idPayment`),
+  INDEX `fk_Payment_Order1_idx` (`Order_idOrder` ASC) VISIBLE,
+  CONSTRAINT `fk_Payment_Order1`
+    FOREIGN KEY (`Order_idOrder`)
+    REFERENCES `mydb`.`Order` (`idOrder`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
