@@ -180,7 +180,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `mydb`.`Order` ;
 
 CREATE TABLE IF NOT EXISTS `mydb`.`Order` (
-  `idOrder` INT NULL,
+  `idOrder` INT NOT NULL,
   `total` FLOAT NOT NULL,
   `discount` INT NOT NULL,
   `totalDiscounted` FLOAT NOT NULL,
